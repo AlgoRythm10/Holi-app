@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              Int   @id @default(autoincrement())
+  name            String
+  email           String   @unique
+  password        String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  colorHits       UserColorHit[]
+  revealedWords   UserRevealedWord[]
+  coupon          CouponDistribution?
+}
+
+model CouponDistribution {
+  id          String   @id @default(uuid())
+  userId      Int      @unique
+  hasCoupon   Boolean  @default(false)
+  couponCode  String?  @unique
+  distributedAt DateTime?
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Color {
+  id        String          @id @default(uuid())
+  name      String          @unique  // e.g. "red", "blue", "green"
+
+  userHits  UserColorHit[]
+}
+
+model Word {
+  id        String              @id @default(uuid())
+  value     String              @unique
+
+  revealedByUsers UserRevealedWord[]
+}
+
+
+model UserColorHit {
+  userId    Int
+  colorId   String
+  hitCount  Int       @default(0)
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  color     Color     @relation(fields: [colorId], references: [id], onDelete: Cascade)
+
+  @@id([userId, colorId]) // Composite primary key (1 row per user per color)
+}
+
+
+model UserRevealedWord {
+  userId     Int
+  wordId     String
+  revealedAt DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  word       Word     @relation(fields: [wordId], references: [id], onDelete: Cascade)
+
+  @@id([userId, wordId]) // Composite primary key
+}
+
