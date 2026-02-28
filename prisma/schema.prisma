@@ -47,7 +47,7 @@ model Color {
 model Word {
   id        String              @id @default(uuid())
   value     String              @unique
-
+  description String            @default("A festive Holi surprise!")
   revealedByUsers UserRevealedWord[]
 }
 

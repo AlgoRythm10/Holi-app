@@ -138,6 +138,8 @@ exports.getRandomWord = async () => {
     // } catch (e) {
     //   console.log("Word already tracked for this user or tracking failed.");
     // }
-
-    return randomWord;
+    return {
+        word: randomWord.value,
+        description: randomWord.description
+    };
 };
