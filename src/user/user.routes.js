@@ -51,10 +51,12 @@ router.get('/me', auth, async (req, res) => {
 router.get('/random-target', async (req, res) => {
     try {
         // req.user.id comes from your JWT middleware
-        const word = await userService.getRandomWord(req.user.userId);
+        const word = await userService.getRandomWord();
+        console.log(word);
         res.json({
             success: true,
-            word: word.value,
+            word: word.word,
+            description: word.description,
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
